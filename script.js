@@ -106,7 +106,6 @@ try {
     const stored = localStorage.getItem("usuario")
     if (stored && stored !== "null") {
         usuario = JSON.parse(stored)
-        // Fallback: se for o id 1 e admin não estiver definido, força true
         if (usuario.id === 1 && !usuario.admin) {
             usuario.admin = true
             localStorage.setItem("usuario", JSON.stringify(usuario))
@@ -308,7 +307,7 @@ async function alterarAdminStatus(userId, tornarAdmin) {
         const data = await resp.json();
         if (resp.ok) {
             alert(`Usuário ${tornarAdmin ? "agora é administrador" : "não é mais administrador"}`);
-            carregarPerfilUsuario(); // recarrega a página do perfil
+            carregarPerfilUsuario();
         } else {
             alert(data.erro || "Erro ao alterar status de admin");
         }
@@ -644,7 +643,6 @@ if (window.location.pathname.includes('user.html')) {
     const userId = urlParams.get('id')
     if (!userId) window.location.href = 'index.html'
 
-    // --- Gerenciar ativação dos botões da navegação ---
     const homeBtn = document.getElementById('homeBtn');
     const perfilNavBtn = document.getElementById('perfilNavBtn');
     if (homeBtn) homeBtn.classList.remove('active');
@@ -658,8 +656,6 @@ if (window.location.pathname.includes('user.html')) {
             const user = await resp.json()
             const isOwnProfile = usuario && (usuario.id == userId)
             const isAdmin = usuario && usuario.admin
-
-            // (removido o bloco que alterava active condicionalmente)
 
             let fotoGrandeHtml = ''
             if (user.foto_perfil && user.foto_perfil.trim() !== '') {
@@ -802,13 +798,6 @@ if (window.location.pathname.includes('user.html')) {
     document.getElementById('fecharEditarBtn')?.addEventListener('click', () => document.getElementById('modalEditarPerfil').style.display = 'none')
     document.getElementById('voltarBtn')?.addEventListener('click', () => window.history.back())
 
-    // (Os event listeners dos botões de navegação já foram definidos acima, mas mantemos os que faltam)
-    // Nota: já temos homeBtn, perfilNavBtn e configNavBtn definidos anteriormente,
-    // mas vamos garantir que os eventos estejam configurados.
-    // Como estamos dentro do bloco if, podemos reatribuir ou confirmar que existem.
-    // Para evitar duplicação, podemos apenas garantir que os eventos estão configurados.
-    // Vamos reutilizar as variáveis já declaradas.
-    // Já temos homeBtn e perfilNavBtn definidos acima, mas vamos garantir que config também funcione.
     const configNavBtnUser = document.getElementById('configNavBtn');
     const modalConfigUser = document.getElementById('modalConfig');
     const fecharConfigUser = document.getElementById('fecharConfigBtn');
