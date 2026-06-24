@@ -143,7 +143,7 @@ async function seguirUsuario(seguindo_id, botaoElement, isPerfilPage = false) {
     } catch(e) { alert("Erro de conexão") }
 }
 
-// ========== CURTIR, COMENTAR, EXCLUIR POST ==========
+// ========== CURTIR, COMENTAR, REPOST, EXCLUIR POST ==========
 async function curtirPost(id) {
     if (!usuario) { alert("Faça login"); return }
     try {
@@ -160,6 +160,32 @@ async function curtirPost(id) {
             botao.style.color = dados.curtido ? "black" : "white"
         }
     } catch(e) { console.error(e) }
+}
+
+// NOVA FUNÇÃO: REPOST
+async function repostPost(id) {
+    if (!usuario) { alert("Faça login"); return }
+    try {
+        const resp = await fetch(`${API}/posts/${id}/repost`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ usuario_id: usuario.id })
+        });
+        const dados = await resp.json();
+        const botao = document.getElementById(`repost-btn-${id}`);
+        if (botao) {
+            botao.innerHTML = `🔄 ${dados.reposts}`;
+            if (dados.repostado) {
+                botao.style.background = "#00ff88";
+                botao.style.color = "black";
+                botao.classList.add("repostado");
+            } else {
+                botao.style.background = "transparent";
+                botao.style.color = "white";
+                botao.classList.remove("repostado");
+            }
+        }
+    } catch(e) { console.error(e); }
 }
 
 async function comentarPost(id, texto) {
@@ -431,6 +457,7 @@ async function carregarFeed() {
                 ${imagemHtml}
                 <div class="post-acoes">
                     <button id="curtir-btn-${post.id}" class="curtir-btn">❤️ ${post.curtidas}</button>
+                    <button id="repost-btn-${post.id}" class="repost-btn ${post.repostado ? 'repostado' : ''}">🔄 ${post.reposts}</button>
                     <button class="comentar-btn">💬 ${post.comentarios}</button>
                     ${podeExcluir ? `<button class="excluir-btn" data-id="${post.id}">🗑️ Excluir</button>` : ''}
                 </div>
@@ -445,6 +472,7 @@ async function carregarFeed() {
             const postDiv = document.getElementById(`post-${post.id}`)
             if (!postDiv) continue
             document.getElementById(`curtir-btn-${post.id}`)?.addEventListener('click', () => curtirPost(post.id))
+            document.getElementById(`repost-btn-${post.id}`)?.addEventListener('click', () => repostPost(post.id))
             postDiv.querySelector('.comentar-btn')?.addEventListener('click', () => abrirComentarios(post.id))
             const verMaisBtn = postDiv.querySelector('.ver-mais')
             if (verMaisBtn) verMaisBtn.addEventListener('click', () => verMaisComentarios(post.id))
@@ -729,7 +757,7 @@ if (window.location.pathname.includes('user.html')) {
                         <div class="post">
                             ${post.conteudo ? `<div class="post-conteudo">${post.conteudo}</div>` : ''}
                             ${imagemHtml}
-                            <div class="post-acoes">❤️ ${post.curtidas} | 💬 ${post.comentarios}</div>
+                            <div class="post-acoes">❤️ ${post.curtidas} | 💬 ${post.comentarios} | 🔄 ${post.reposts}</div>
                             ${dataHtml}
                         </div>
                     `
