@@ -156,13 +156,19 @@ async function curtirPost(id) {
         const botao = document.getElementById(`curtir-btn-${id}`)
         if (botao) {
             botao.innerHTML = `❤️ ${dados.curtidas}`
-            botao.style.background = dados.curtido ? "#00ff88" : "#262626"
-            botao.style.color = dados.curtido ? "black" : "white"
+            if (dados.curtido) {
+                botao.style.background = "#00ff88"
+                botao.style.color = "black"
+                botao.classList.add("curtido")
+            } else {
+                botao.style.background = "transparent"
+                botao.style.color = "white"
+                botao.classList.remove("curtido")
+            }
         }
     } catch(e) { console.error(e) }
 }
 
-// NOVA FUNÇÃO: REPOST
 async function repostPost(id) {
     if (!usuario) { alert("Faça login"); return }
     try {
@@ -441,6 +447,9 @@ async function carregarFeed() {
             const dataHtml = `<div class="post-data">${formatarData(post.data_post)}</div>`;
             const comentariosHTML = `<div class="comentarios-area" id="comentarios-${post.id}"><button class="ver-mais" data-id="${post.id}">Ver comentários (${post.comentarios})</button></div>`
 
+            const curtidoStyle = post.curtido ? 'background: #00ff88; color: black;' : 'background: transparent; color: white;';
+            const repostadoClass = post.repostado ? 'repostado' : '';
+
             const postDiv = document.createElement('div')
             postDiv.className = 'post'
             postDiv.id = `post-${post.id}`
@@ -456,8 +465,8 @@ async function carregarFeed() {
                 ${post.conteudo ? `<div class="post-conteudo">${post.conteudo}</div>` : ''}
                 ${imagemHtml}
                 <div class="post-acoes">
-                    <button id="curtir-btn-${post.id}" class="curtir-btn">❤️ ${post.curtidas}</button>
-                    <button id="repost-btn-${post.id}" class="repost-btn ${post.repostado ? 'repostado' : ''}">🔄 ${post.reposts}</button>
+                    <button id="curtir-btn-${post.id}" class="curtir-btn ${post.curtido ? 'curtido' : ''}" style="${curtidoStyle}">❤️ ${post.curtidas}</button>
+                    <button id="repost-btn-${post.id}" class="repost-btn ${repostadoClass}">🔄 ${post.reposts}</button>
                     <button class="comentar-btn">💬 ${post.comentarios}</button>
                     ${podeExcluir ? `<button class="excluir-btn" data-id="${post.id}">🗑️ Excluir</button>` : ''}
                 </div>

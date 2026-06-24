@@ -692,6 +692,12 @@ a {
     font-size: 13px;
 }
 
+/* ESTILO PARA BOTÃO CURTIR ATIVO */
+.curtir-btn.curtido {
+    background: #00ff88 !important;
+    color: black !important;
+}
+
 /* ========== RESPONSIVIDADE ========== */
 @media (max-width: 768px) {
     body { font-size: 14px; }
